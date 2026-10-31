@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blackjack</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/table.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/controls.css">
+</head>
+<body>
+  <main class="table">
+    <header>
+      <h1>Blackjack</h1>
+      <div class="tally" aria-label="Session tally">
+        <span>Wins <b id="wins">0</b></span>
+        <span>Losses <b id="losses">0</b></span>
+        <span>Pushes <b id="pushes">0</b></span>
+      </div>
+    </header>
+
+    <section class="seat">
+      <h2>Dealer <span class="score" id="dealer-score"></span></h2>
+      <div class="hand" id="dealer-hand"></div>
+      <p class="dealer-note" id="dealer-note" aria-live="polite"></p>
+    </section>
+
+    <div id="banner" class="banner" role="status" aria-live="polite"></div>
+
+    <section class="seat">
+      <h2>You <span class="score" id="player-score"></span></h2>
+      <div class="hand" id="player-hand"></div>
+    </section>
+
+    <div class="controls">
+      <button id="hit" disabled>Hit</button>
+      <button id="stand" disabled>Stand</button>
+      <button id="deal" class="primary">Deal</button>
+    </div>
+    <p class="rules">The dealer is an AI agent that decides for itself when to hit or stand. If it is unavailable, the standard rule applies (hit on 16 or less, stand on 17 or more). Blackjack beats a regular 21.</p>
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

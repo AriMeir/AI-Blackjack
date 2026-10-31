@@ -1,0 +1,62 @@
+.card {
+  position: relative;
+  flex: none;
+  width: var(--card-w);
+  height: var(--card-h);
+  margin-right: -26px;
+  border-radius: 10px;
+  background: #fff;
+  color: #1b1b1b;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  font-weight: 700;
+  user-select: none;
+}
+.card.red { color: #c62828; }
+
+.card .corner {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 1rem;
+  line-height: 1.05;
+  text-align: center;
+}
+.card .corner.bottom {
+  top: auto;
+  left: auto;
+  bottom: 6px;
+  right: 8px;
+  transform: rotate(180deg);
+}
+.card .pip {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 2.6rem;
+}
+
+.card.back {
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.12) 0 6px, transparent 6px 12px),
+    linear-gradient(135deg, #8e1b2c, #4d0d18);
+  border: 4px solid #fff;
+}
+
+.card.deal { animation: deal 0.35s ease-out; }
+.card.flip { animation: flip 0.5s ease; }
+
+@keyframes deal {
+  from { transform: translate(-60px, -80px) rotate(-12deg); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes flip {
+  0% { transform: rotateY(90deg); }
+  100% { transform: rotateY(0); }
+}
+
+@media (max-width: 420px) {
+  :root { --card-w: 68px; --card-h: 98px; }
+  .card .pip { font-size: 2rem; }
+  .card .corner { font-size: 0.85rem; }
+}

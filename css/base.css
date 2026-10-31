@@ -1,0 +1,23 @@
+:root {
+  --felt: #0b5d3b;
+  --felt-dark: #063d27;
+  --gold: #e8c766;
+  --card-w: 84px;
+  --card-h: 120px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: #fff;
+  background: #04251a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card.deal, .card.flip { animation: none; }
+}
