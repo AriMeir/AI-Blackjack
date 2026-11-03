@@ -2,6 +2,7 @@ import { createGame } from './logic/game.js';
 import { playDealerTurn } from './logic/dealerTurn.js';
 import { fetchDealerMove } from './api/dealerClient.js';
 import { createView } from './ui/view.js';
+import { createLogView } from './ui/logView.js';
 
 const DEALER_PAUSE_MS = 700;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -9,14 +10,21 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 // manualDealer: stand() hands the dealer's turn to playDealerTurn, which asks the server for each move.
 const game = createGame(undefined, { manualDealer: true });
 const view = createView(game);
+const logView = createLogView(game);
+
+// Redraws everything that depends on the game state: the table and the log.
+function render() {
+  view.render();
+  logView.render();
+}
 
 // After a player action: redraw, and if the dealer's turn has begun, play it.
 async function afterPlayerAction() {
-  view.render();
+  render();
   if (game.phase !== 'dealer') return;
   await playDealerTurn(game, {
     getMove: fetchDealerMove,
-    onChange: view.render,
+    onChange: render,
     pause: () => sleep(DEALER_PAUSE_MS),
   });
 }
@@ -24,7 +32,7 @@ async function afterPlayerAction() {
 view.buttons.deal.addEventListener('click', () => {
   view.resetAnimations();
   game.startRound();
-  view.render();
+  render();
 });
 view.buttons.hit.addEventListener('click', () => {
   game.hit();
@@ -35,4 +43,4 @@ view.buttons.stand.addEventListener('click', () => {
   afterPlayerAction();
 });
 
-view.render();
+render();

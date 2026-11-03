@@ -8,8 +8,10 @@
   <link rel="stylesheet" href="css/table.css">
   <link rel="stylesheet" href="css/cards.css">
   <link rel="stylesheet" href="css/controls.css">
+  <link rel="stylesheet" href="css/log.css">
 </head>
 <body>
+  <div class="layout">
   <main class="table">
     <header>
       <h1>Blackjack</h1>
@@ -40,6 +42,15 @@
     </div>
     <p class="rules">The dealer is an AI agent that decides for itself when to hit or stand. If it is unavailable, the standard rule applies (hit on 16 or less, stand on 17 or more). Blackjack beats a regular 21.</p>
   </main>
+
+  <aside class="log" aria-label="Game log">
+    <div class="log-header">
+      <h2>Game log</h2>
+      <button type="button" id="log-clear" class="log-clear">Clear log</button>
+    </div>
+    <div class="log-list" id="log-list" role="log" aria-live="polite"></div>
+  </aside>
+  </div>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

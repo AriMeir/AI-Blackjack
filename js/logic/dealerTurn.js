@@ -72,6 +72,8 @@ export async function playDealerTurn(game, { getMove, onChange = () => {}, pause
 
     game.dealerThinking = false;
     game.dealerNote = { text: move.explanation, source: move.source };
+    // The note above is replaced by the next decision; the log keeps every one.
+    game.addLog('dealer', 'thought', move.explanation, { source: move.source, action: move.action });
     onChange();
     if (move.action !== 'hit') break;
 

@@ -24,20 +24,25 @@ How the pieces share the work:
 - **Rounds that are already over never reach the agent.** If you bust, the engine ends the round locally and no request is made. The server also rejects such boards.
 - **Fallback.** If there's no API key, the server is down, the request times out, or the answer is malformed, the standard rule (hit on 16 or less, stand on 17 or more) decides that move, and the note shows a **Fallback rule** label saying the AI was unavailable.
 
+### The game log
+
+A chat-style **Game log** sits beside the table (below it on narrow screens). It records everything that happens: the deal, each of your hits and stands, the dealer's reveal and draws, and **every explanation the dealer gives** (labelled AI agent or Fallback rule, with the action it chose), then the result and score. Unlike the note under the dealer's cards, which is replaced by each new decision, the log keeps them all. It lasts for the browser session (a reload starts it empty), and the **Clear log** button empties it.
+
 To enable the agent, put your key in `server/.env`:
 
 ```
 ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-and start the server with `node --env-file=.env index.js` from `card-game/server`.
+`npm start` loads that file automatically (and still starts without it, using the fallback rule).
 
 ## Tests
 
 ```
 cd card-game
 node tests/tests.js                     game rules
-node --test tests/dealerTurn.test.js    dealer turn and server client
+node --test "tests/*.test.js"           dealer turn, server client, game log
+npm test                                both of the above
 
 cd server
 npm test                                server, agent and route
@@ -54,6 +59,7 @@ card-game/
     table.css       table layout, scores, banner
     cards.css       card faces/backs and animations
     controls.css    buttons
+    log.css         page layout and the game log panel
   js/
     main.js         entry point: wires game, view and buttons
     config.js       constants (ranks, suits, 21, dealer limit)
@@ -66,10 +72,13 @@ card-game/
       dealerClient.js  POST /api/dealer-move
     ui/
       view.js       renders the game state into the page
+      logView.js    the game log panel (chat-style)
       cardElement.js builds one card element
   tests/
     tests.js
     dealerTurn.test.js
+    gameLog.test.js
+    logView.test.js
   server/           Express server + dealer agent (see below)
 ```
 

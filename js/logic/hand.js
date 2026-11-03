@@ -30,3 +30,13 @@ export function isNatural(hand) {
 export function dealerShouldHit(hand) {
   return handValue(hand).total < DEALER_STANDS_ON;
 }
+
+// A card as text, e.g. "10♠".
+export const formatCard = (card) => `${card.rank}${card.suit}`;
+
+// A hand as text with its total, e.g. "10♠ 6♥ (16)", "A♠ 6♥ (soft 17)" or "10♠ 6♥ K♣ (26, bust)".
+export function describeHand(hand) {
+  const { total, soft } = handValue(hand);
+  const label = total > BLACKJACK ? `${total}, bust` : soft ? `soft ${total}` : `${total}`;
+  return `${hand.map(formatCard).join(' ')} (${label})`;
+}
