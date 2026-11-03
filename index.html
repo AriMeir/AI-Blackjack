@@ -31,16 +31,18 @@
     <div id="banner" class="banner" role="status" aria-live="polite"></div>
 
     <section class="seat">
-      <h2>You <span class="score" id="player-score"></span></h2>
+      <h2><span id="player-title">You</span> <span class="score" id="player-score"></span></h2>
       <div class="hand" id="player-hand"></div>
+      <p class="dealer-note" id="player-note" aria-live="polite"></p>
     </section>
 
     <div class="controls">
       <button id="hit" disabled>Hit</button>
       <button id="stand" disabled>Stand</button>
       <button id="deal" class="primary">Deal</button>
+      <button id="auto" title="Watch an AI player play against the AI dealer">AI vs AI</button>
     </div>
-    <p class="rules">The dealer is an AI agent that decides for itself when to hit or stand. If it is unavailable, the standard rule applies (hit on 16 or less, stand on 17 or more). Blackjack beats a regular 21.</p>
+    <p class="rules">The dealer is an AI agent that decides for itself when to hit or stand. If it is unavailable, the standard rule applies (hit on 16 or less, stand on 17 or more). Blackjack beats a regular 21. Press AI vs AI to watch an AI player take on the AI dealer for a few rounds.</p>
   </main>
 
   <aside class="log" aria-label="Game log">

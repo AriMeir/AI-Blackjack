@@ -10,10 +10,13 @@ function getElements() {
     dealerScore: $('dealer-score'),
     dealerNote: $('dealer-note'),
     playerScore: $('player-score'),
+    playerNote: $('player-note'),
+    playerTitle: $('player-title'),
     banner: $('banner'),
     hit: $('hit'),
     stand: $('stand'),
     deal: $('deal'),
+    auto: $('auto'),
     wins: $('wins'),
     losses: $('losses'),
     pushes: $('pushes'),
@@ -40,21 +43,27 @@ function renderHand(container, hand, { alreadyShown, hideSecond, justRevealed })
   });
 }
 
-// Where the dealer's latest decision came from: the AI agent, or the rule-based fallback.
+// Where a decision came from: the AI agent, or the rule-based fallback.
 const SOURCE_LABELS = { claude: 'AI agent', rule: 'Fallback rule' };
 
-// Shows what the dealer is doing: "thinking…" while waiting, then the explanation of its decision.
-function renderDealerNote(el, game) {
+// Shows what a side is doing: "thinking…" while waiting, then the explanation of its latest decision.
+function renderNote(el, { thinking, thinkingText, note }) {
   el.replaceChildren();
-  if (game.dealerThinking) {
-    el.textContent = 'Dealer is thinking…';
+  if (thinking) {
+    el.textContent = thinkingText;
     return;
   }
-  if (!game.dealerNote) return;
+  if (!note) return;
   const badge = document.createElement('span');
-  badge.className = `source ${game.dealerNote.source}`;
-  badge.textContent = SOURCE_LABELS[game.dealerNote.source] ?? game.dealerNote.source;
-  el.append(badge, ` ${game.dealerNote.text}`);
+  badge.className = `source ${note.source}`;
+  badge.textContent = SOURCE_LABELS[note.source] ?? note.source;
+  el.append(badge, ` ${note.text}`);
+}
+
+// The AI vs AI button: starts a session, becomes Stop while one runs, and is off during a human round.
+function renderAutoButton(button, game) {
+  button.textContent = game.autoStopping ? 'Stopping…' : game.autoPlaying ? 'Stop' : 'AI vs AI';
+  button.disabled = game.autoStopping || (!game.autoPlaying && (game.phase === 'player' || game.phase === 'dealer'));
 }
 
 /** Draws the game state into the page. Remembers what was shown so only new cards animate. */
@@ -79,12 +88,17 @@ export function createView(game) {
     els.playerScore.textContent = scoreText(game.player, false);
     els.dealerScore.textContent = scoreText(game.dealer, hideDealer);
 
-    const playing = game.phase === 'player';
-    els.hit.disabled = !playing;
-    els.stand.disabled = !playing;
-    els.deal.disabled = playing || game.phase === 'dealer';
-    renderDealerNote(els.dealerNote, game);
+    // The human can only act on their own turn, never while the AI player is playing.
+    const humanTurn = game.phase === 'player' && !game.aiPlayer;
+    els.hit.disabled = !humanTurn;
+    els.stand.disabled = !humanTurn;
+    els.deal.disabled = game.autoPlaying || game.phase === 'player' || game.phase === 'dealer';
     els.deal.textContent = game.phase === 'idle' ? 'Deal' : 'New Round';
+    renderAutoButton(els.auto, game);
+
+    els.playerTitle.textContent = game.aiPlayer ? 'AI Player' : 'You';
+    renderNote(els.playerNote, { thinking: game.playerThinking, thinkingText: 'AI player is thinking…', note: game.playerNote });
+    renderNote(els.dealerNote, { thinking: game.dealerThinking, thinkingText: 'Dealer is thinking…', note: game.dealerNote });
 
     els.banner.textContent = game.result ? game.result.message : '';
     els.banner.className = 'banner' + (game.result ? ` show ${game.result.outcome}` : '');
@@ -95,5 +109,5 @@ export function createView(game) {
     shown = { player: game.player.length, dealer: game.dealer.length, revealed: game.revealed };
   }
 
-  return { render, resetAnimations, buttons: { hit: els.hit, stand: els.stand, deal: els.deal } };
+  return { render, resetAnimations, buttons: { hit: els.hit, stand: els.stand, deal: els.deal, auto: els.auto } };
 }

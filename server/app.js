@@ -2,13 +2,15 @@ import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createDealerMoveRouter } from './routes/dealerMove.js';
+import { createPlayerMoveRouter } from './routes/playerMove.js';
 
 const GAME_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 /**
- * Builds the Express app. `getAgent` returns the dealer agent; it is injected so tests can pass a fake.
+ * Builds the Express app. `getAgent` returns the dealer agent and `getPlayerAgent` the player agent;
+ * they are injected so tests can pass fakes.
  */
-export function createApp({ getAgent }) {
+export function createApp({ getAgent, getPlayerAgent }) {
   const app = express();
   app.use(express.json());
 
@@ -16,6 +18,7 @@ export function createApp({ getAgent }) {
     res.json({ status: 'ok' });
   });
   app.use('/api', createDealerMoveRouter(getAgent));
+  app.use('/api', createPlayerMoveRouter(getPlayerAgent));
   app.use('/api', (req, res) => {
     res.status(404).json({ error: { code: 'not_found', message: 'Unknown API route.' } });
   });

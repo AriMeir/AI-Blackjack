@@ -1,7 +1,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { createApp } from '../app.js';
-import { DealerAgentError } from '../agent/dealerAgent.js';
+import { AgentError } from '../agent/callAgent.js';
 import { c, hand } from './helpers.js';
 
 // The route is exercised over real HTTP on a random local port, with a fake agent.
@@ -100,7 +100,7 @@ for (const [code, expectedStatus] of errorStatuses) {
   test(`agent error "${code}" maps to HTTP ${expectedStatus}`, async (t) => {
     t.mock.method(console, 'error', () => {});
     useAgent(async () => {
-      throw new DealerAgentError(code, `${code} happened`);
+      throw new AgentError(code, `${code} happened`);
     });
     const { status, json } = await post(goodBoard);
     assert.equal(status, expectedStatus);

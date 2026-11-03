@@ -1,4 +1,4 @@
-export const ACTIONS = ['hit', 'stand'];
+import { ACTIONS } from './actions.js';
 
 // The dealer agent's only tool. Claude "calls" it to report its decision.
 export const dealerActionTool = {

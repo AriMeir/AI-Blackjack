@@ -24,3 +24,12 @@ export function handValue(hand) {
 }
 
 export const handTotal = (hand) => handValue(hand).total;
+
+// Turns a list of cards into readable text, e.g. "10♠, 6♥".
+export const formatHand = (hand) => hand.map((card) => `${card.rank}${card.suit}`).join(', ');
+
+// Describes a hand's total, e.g. "16" or "soft 17". The server counts it so the model doesn't have to.
+export function describeTotal(hand) {
+  const { total, soft } = handValue(hand);
+  return soft ? `soft ${total}` : String(total);
+}

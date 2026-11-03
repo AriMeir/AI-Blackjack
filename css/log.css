@@ -106,6 +106,14 @@
   font-style: italic;
 }
 
+/* the AI player's reasoning sits on the player's side (right) */
+.log-entry.you.thought {
+  background: rgba(31, 122, 82, 0.35);
+  border-left: none;
+  border-right: 3px solid var(--gold);
+  border-bottom-right-radius: 4px;
+}
+
 /* system lines: centered, quiet */
 .log-entry.system {
   align-self: center;
@@ -143,3 +151,4 @@
 .badge.source-claude { background: var(--gold); color: #3a2a00; }
 .badge.source-rule { background: #8a3b2e; color: #fff; }
 .badge.action { background: rgba(255, 255, 255, 0.2); }
+.badge.who { background: rgba(255, 255, 255, 0.28); }

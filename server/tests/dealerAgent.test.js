@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import Anthropic from '@anthropic-ai/sdk';
-import { createDealerAgent, DealerAgentError, MODEL, EFFORT } from '../agent/dealerAgent.js';
+import { createDealerAgent, AgentError, MODEL, EFFORT } from '../agent/dealerAgent.js';
 import { SYSTEM_PROMPT } from '../agent/prompt.js';
 import { dealerActionTool } from '../agent/tool.js';
 import { hand, toolCallResponse, fakeClient } from './helpers.js';
@@ -9,9 +9,9 @@ import { hand, toolCallResponse, fakeClient } from './helpers.js';
 const playerHand = hand('10', '9');
 const decide = (client, dealerHand) => createDealerAgent({ client }).decide({ dealerHand, playerHand });
 
-// Expects decide() to fail with a DealerAgentError of the given code.
+// Expects decide() to fail with an AgentError of the given code.
 const assertFails = (promise, code) =>
-  assert.rejects(promise, (error) => error instanceof DealerAgentError && error.code === code);
+  assert.rejects(promise, (error) => error instanceof AgentError && error.code === code);
 
 test('valid hit on 16', async () => {
   const client = fakeClient(toolCallResponse({ action: 'hit', explanation: 'I have 16, so I must hit.' }));
@@ -147,7 +147,7 @@ test('an SDK API error becomes an api_error with its status', async () => {
   const client = fakeClient(Anthropic.APIError.generate(401, { error: { message: 'bad key' } }, 'bad key', new Headers()));
   await assert.rejects(
     decide(client, hand('10', '6')),
-    (error) => error instanceof DealerAgentError && error.code === 'api_error' && error.status === 401
+    (error) => error instanceof AgentError && error.code === 'api_error' && error.status === 401
   );
 });
 

@@ -16,8 +16,10 @@ function createEntryElement(entry) {
   el.className = `log-entry ${entry.speaker} ${entry.kind}`;
 
   if (entry.kind === 'thought') {
+    // Thoughts come from the dealer, or from the AI player (logged as 'you': a human has no thoughts to log).
     const head = document.createElement('div');
     head.className = 'log-head';
+    head.append(badge('who', entry.speaker === 'dealer' ? 'Dealer' : 'AI player'));
     head.append(badge(`source-${entry.source}`, SOURCE_LABELS[entry.source] ?? entry.source));
     if (entry.action) head.append(badge('action', ACTION_LABELS[entry.action] ?? entry.action));
     el.append(head);

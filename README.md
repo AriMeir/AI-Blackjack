@@ -24,6 +24,15 @@ How the pieces share the work:
 - **Rounds that are already over never reach the agent.** If you bust, the engine ends the round locally and no request is made. The server also rejects such boards.
 - **Fallback.** If there's no API key, the server is down, the request times out, or the answer is malformed, the standard rule (hit on 16 or less, stand on 17 or more) decides that move, and the note shows a **Fallback rule** label saying the AI was unavailable.
 
+### AI vs AI
+
+The **AI vs AI** button hands your seat to a second AI agent, so an AI player and the AI dealer play against each other. It plays up to 5 rounds per click (`MAX_AUTO_ROUNDS` in `js/logic/autoPlay.js`, so it can't spend credit forever); the button turns into **Stop**, which lets the current round finish and then ends the session. Your Hit, Stand and Deal buttons are off while it runs.
+
+- **The AI player decides like the dealer does:** it has its own tool (`player_action`, hit or stand plus an explanation), is told to win, and is bound by no fixed rule. It sees only its own hand and the dealer's **face-up card**. The dealer's hidden card never leaves the game, and the server refuses a request that includes it.
+- **The same safeguards apply:** the engine executes and validates every move, rounds that are already over (a Blackjack or a bust) make no request, there is a cap on decisions per turn, and if an agent is unavailable or answers badly a simple fallback rule (hit below 17) decides that move and is labelled **Fallback rule**.
+- **The log and the heading** say "AI player" instead of "You" during these rounds, and every explanation from both agents is kept in the log.
+- Each round takes roughly 4 to 6 calls to the model, about 10 to 30 seconds.
+
 ### The game log
 
 A chat-style **Game log** sits beside the table (below it on narrow screens). It records everything that happens: the deal, each of your hits and stands, the dealer's reveal and draws, and **every explanation the dealer gives** (labelled AI agent or Fallback rule, with the action it chose), then the result and score. Unlike the note under the dealer's cards, which is replaced by each new decision, the log keeps them all. It lasts for the browser session (a reload starts it empty), and the **Clear log** button empties it.
@@ -41,7 +50,7 @@ ANTHROPIC_API_KEY=sk-ant-...
 ```
 cd card-game
 node tests/tests.js                     game rules
-node --test "tests/*.test.js"           dealer turn, server client, game log
+node --test "tests/*.test.js"           dealer and player turns, AI vs AI, game log, view, clients
 npm test                                both of the above
 
 cd server
@@ -68,8 +77,12 @@ card-game/
       hand.js       hand value, natural blackjack, dealer hit rule
       game.js       round flow and results
       dealerTurn.js plays the dealer's turn one decision at a time; AI decisions, with fallback to the standard rule
+      playerTurn.js plays the AI player's turn the same way (AI vs AI)
+      autoPlay.js   AI vs AI: runs rounds in a row, with a round cap and a graceful Stop
     api/
+      postJson.js      sends JSON to the server, with a timeout
       dealerClient.js  POST /api/dealer-move
+      playerClient.js  POST /api/player-move
     ui/
       view.js       renders the game state into the page
       logView.js    the game log panel (chat-style)
@@ -77,12 +90,15 @@ card-game/
   tests/
     tests.js
     dealerTurn.test.js
+    playerTurn.test.js
+    autoPlay.test.js
     gameLog.test.js
     logView.test.js
+    view.test.js
   server/           Express server + dealer agent (see below)
 ```
 
-The server has its own `package.json`, constants and tests: `app.js`, `index.js`, `routes/dealerMove.js`, `agent/` (tool, prompt, `dealerAgent.js`), `hand.js`, `config.js`.
+The server has its own `package.json`, constants and tests: `app.js`, `index.js`, `routes/` (`dealerMove.js`, `playerMove.js`, shared `common.js`), `agent/` (the dealer's and the player's tool, prompt and agent, plus `callAgent.js`, the code they share for asking Claude and checking its answer), `hand.js`, `config.js`.
 
 ## Rules
 
